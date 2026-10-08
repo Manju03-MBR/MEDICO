@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // Helper function to check if user owns the document path
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User profile documents
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      // Consultations subcollection
+      match /consultations/{consultationId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      // Audit logs subcollection
+      match /auditLogs/{auditId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    // Test connection doc for client health-checks
+    match /test/connection {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Authenticated clinician or researcher profile",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["clinician", "researcher", "pharmacist"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "Consultation": {
+      "title": "Consultation",
+      "description": "Saved patient dosing simulation run and clinical consultation notes",
+      "type": "object",
+      "properties": {
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "cohort": { "type": "string" },
+        "targetDrug": { "type": "string" },
+        "recommendedDose": { "type": "number" },
+        "standardDose": { "type": "number" },
+        "doseUnit": { "type": "string" },
+        "doseDeltaPercent": { "type": "number" },
+        "adrRiskScore": { "type": "number" },
+        "relativeRiskIndex": { "type": "number" },
+        "clinicalNotes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["patientId", "targetDrug", "recommendedDose", "createdAt"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Clinician interaction and electronic signature audit record",
+      "type": "object",
+      "properties": {
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile document owned by the authenticated clinician"
+    },
+    "/users/{userId}/consultations/{consultationId}": {
+      "schema": "Consultation",
+      "description": "Consultation and prescription dosing runs saved by the user"
+    },
+    "/users/{userId}/auditLogs/{auditId}": {
+      "schema": "AuditLog",
+      "description": "Clinician audit trail log entries"
+    }
+  }
+}
